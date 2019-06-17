@@ -7,6 +7,11 @@ while [[ $# -gt 0 ]]; do
 key="$1"
 
 case $key in
+    --webview)
+    EXTRA_PRIV="framework/framework-res.apk $EXTRA_PRIV"
+    echo "--> Modify framework-res.apk to support com.android.webview(bromite webview needed)"
+    shift
+    ;;
     --trafficfix)
     EXTRA_PRIV="framework/services.jar $EXTRA_PRIV"
     echo "--> Increase threshold (50M) to prevent high cpu of traffic monitoring"
@@ -39,6 +44,7 @@ patchmethod="python2.7 $tool_dir/patchmethod.py"
 heapsize=1024
 smali="java -Xmx${heapsize}m -jar $tool_dir/smali-2.2.5.jar"
 baksmali="java -Xmx${heapsize}m -jar $tool_dir/baksmali-2.2.5.jar"
+apktool="java -Xmx${heapsize}m -jar $tool_dir/apktool_2.4.0.jar"
 keypass="--ks-pass pass:testkey --key-pass pass:testkey"
 sign="java -Xmx${heapsize}m -jar $tool_dir/apksigner.jar sign \
       --ks $tool_dir/testkey.jks $keypass"
@@ -84,6 +90,7 @@ else
         patchmethod="python2.7 ../../tools/patchmethod.py"
         smali="java -Xmx${heapsize}m -jar ../../tools/smali-2.2.5.jar"
         baksmali="java -Xmx${heapsize}m -jar ../../tools/baksmali-2.2.5.jar"
+        apktool="java -Xmx${heapsize}m -jar ../../tools/apktool_2.4.0.jar"
         sign="java -Xmx${heapsize}m -jar ../../tools/apksigner.jar sign \
               --ks ../../tools/testkey.jks $keypass"
     fi
@@ -160,6 +167,19 @@ deodex() {
         apkdir=$deoappdir
         apkfile=$apkdir/$app
     fi
+
+    if [[ "$app" == "framework-res" ]]; then
+        apkdir=$deoappdir
+        apkfile=$apkdir/$app
+        apktool d $apkfile -f -o $apkdir/framework-res || return 1
+        cp $tool_dir/files/config_webview_packages.xml $apkdir/framework-res/res/xml
+        apktool b $apkdir/framework-res -c -o $apkfile
+        $zipalign -f 4 $apkfile $apkfile-2 >/dev/null 2>&1
+        mv $apkfile-2 $apkfile
+        rm -rf $apkdir/framework-res
+        echo "Modify framework-res OK"
+    fi
+
     file_list="$($sevenzip l "$apkfile")"
     if [[ "$file_list" == *"classes.dex"* ]]; then
         echo "--> decompiling $app..."
