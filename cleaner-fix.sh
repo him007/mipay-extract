@@ -34,7 +34,7 @@ case $key in
 esac
 done
 
-#mipay_apps="Calendar" # SecurityCenter"
+mipay_apps="Calendar  SecurityCenter"
 private_apps=""
 [ -z "$EXTRA_PRIV" ] || private_apps="$private_apps $EXTRA_PRIV"
 
@@ -172,9 +172,9 @@ deodex() {
     if [[ "$app" == "framework-res.apk" ]]; then
         apkdir=$deoappdir
         apkfile=$apkdir/$app
-        apktool d $apkfile -f -o $apkdir/framework-res || return 1
+        $apktool d $apkfile -f -o $apkdir/framework-res || return 1
         cp $tool_dir/config_webview_packages.xml $apkdir/framework-res/res/xml
-        apktool b $apkdir/framework-res -c -o $apkfile
+        $apktool b $apkdir/framework-res -c -o $apkfile
         $zipalign -f 4 $apkfile $apkfile-2 >/dev/null 2>&1
         mv -v $apkfile-2 $apkfile
         rm -rf $apkdir/framework-res
