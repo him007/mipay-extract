@@ -1,4 +1,6 @@
 language: java
+jdk:
+  - oraclejdk11
 branches:
   except:
   - maste
@@ -7,7 +9,6 @@ addons:
   apt:
     packages:
     - python2.7
-    - oracle-java8-installer
 before_script:
 - unset _JAVA_OPTIONS
 script:
