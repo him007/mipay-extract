@@ -40,6 +40,6 @@ done
 [[ "$1" == "keep"  ]] || rm -rf miui-*/ miui_*.zip
 for i in "${eu_urls[@]}"
 do
-   bash cleaner-fix.sh --clock --trafficfix --nofbe "$i" || exit 1
+   bash cleaner-fix.sh --webview --clock --trafficfix "$i" || exit 1
 done
 exit 0
