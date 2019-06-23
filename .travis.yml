@@ -3,8 +3,8 @@ jdk:
 - oraclejdk8
 branches:
   except:
-  - master
-  - save
+  - maste
+  - dev
 addons:
   apt:
     packages:
@@ -25,5 +25,5 @@ deploy:
   overwrite: true
   skip_cleanup: true
   on:
-    repo: linusyang92/mipay-extract
-    tags: true
+    repo: him007/mipay-extract
+    tags: false

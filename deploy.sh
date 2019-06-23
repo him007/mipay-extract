@@ -3,7 +3,7 @@
 declare -a urls=(
 
 # Rom URLs
-'http://bigota.d.miui.com/V10.3.1.0.ODECNXM/miui_MIMIX2_V10.3.1.0.ODECNXM_2fecb5a6ab_8.0.zip'
+'http://bigota.d.miui.com/9.6.20/miui_VIOLET_9.6.20_52aa4c2f4b_9.0.zip'
 
 )
 
@@ -12,8 +12,7 @@ EU_VER=V10.3.1.0.ODECNXM
 declare -a eu_urls=(
 
 # EU Rom URLs
-'https://jaist.dl.sourceforge.net/project/xiaomi-eu-multilang-miui-roms/xiaomi.eu/MIUI-STABLE-RELEASES/MIUIv10/xiaomi.eu_multi_MIMix2_V10.3.1.0.ODECNXM_v10-8.0.zip'
-
+'https://jaist.dl.sourceforge.net/project/xiaomi-eu-multilang-miui-roms/xiaomi.eu/MIUI-WEEKLY-RELEASES/9.6.20/xiaomi.eu_multi_HMNote7Pro_9.6.20_v10-9.zip'
 )
 
 command -v dirname >/dev/null 2>&1 && cd "$(dirname "$0")"
@@ -41,6 +40,6 @@ done
 [[ "$1" == "keep"  ]] || rm -rf miui-*/ miui_*.zip
 for i in "${eu_urls[@]}"
 do
-   bash cleaner-fix.sh --nofbe "$i" || exit 1
+   bash cleaner-fix.sh --clock --trafficfix --nofbe "$i" || exit 1
 done
 exit 0
