@@ -9,7 +9,7 @@ key="$1"
 case $key in
     --webview)
     EXTRA_PRIV="framework/framework-res.apk $EXTRA_PRIV"
-    echo "--> Modify framework-res.apk to support com.android.webview(bromite webview needed)"
+    echo "--> Modify framework-res.apk to support com.android.webview(bromite webview)"
     shift
     ;;
     --trafficfix)
@@ -22,10 +22,11 @@ case $key in
     echo "--> Modify Clock to support work day alarms"
     shift
     ;;
-    --nofbe)
-    NO_EXTRA_FBE="yes"
-    shift
-    ;;
+#  no need for redmi note 7 pro
+#    --nofbe)
+#    NO_EXTRA_FBE="yes"
+#    shift
+#    ;;
     *)
     darr+=("$1")
     shift
@@ -33,7 +34,7 @@ case $key in
 esac
 done
 
-mipay_apps="Calendar SecurityCenter"
+#mipay_apps="Calendar" # SecurityCenter"
 private_apps=""
 [ -z "$EXTRA_PRIV" ] || private_apps="$private_apps $EXTRA_PRIV"
 
@@ -168,14 +169,14 @@ deodex() {
         apkfile=$apkdir/$app
     fi
 
-    if [[ "$app" == "framework-res" ]]; then
+    if [[ "$app" == "framework-res.apk" ]]; then
         apkdir=$deoappdir
         apkfile=$apkdir/$app
         apktool d $apkfile -f -o $apkdir/framework-res || return 1
-        cp $tool_dir/files/config_webview_packages.xml $apkdir/framework-res/res/xml
+        cp $tool_dir/config_webview_packages.xml $apkdir/framework-res/res/xml
         apktool b $apkdir/framework-res -c -o $apkfile
         $zipalign -f 4 $apkfile $apkfile-2 >/dev/null 2>&1
-        mv $apkfile-2 $apkfile
+        mv -v $apkfile-2 $apkfile
         rm -rf $apkdir/framework-res
         echo "Modify framework-res OK"
     fi
@@ -213,6 +214,9 @@ deodex() {
                 i="$apkdir/smali/com/android/server/net/NetworkStatsService.smali"
                 $sed -i 's|, 0x200000$|, 0x5000000|g' "$i" || return 1
                 $sed -i 's|, 0x20000$|, 0x1000000|g' "$i" || return 1
+                cp="$apkdir/smali/com/android/server/MiuiConfigCaptivePortal.smali"
+                [[ -n "$portal" ]] && $sed -i "s|connect.rom.miui.com|$portal|g" "$cp" \
+                    || echo '----> no $portal,skip modify CaptivePortal'
                 if grep -q -F ', 0x20000' $i; then
                     echo "----> ! failed to patch: $(basename $i)"
                 else
@@ -347,11 +351,12 @@ extract() {
     rm -f ../../eufix-$model-$ver.zip system/build.prop
     $sevenzip a -tzip ../../eufix-$model-$ver.zip . >/dev/null
 
-    if [ -z "$NO_EXTRA_FBE" ]; then
-        cp "$tool_dir/update-binary-fbe" $ubin
-        rm -f eufix-force-fbe-oreo.zip
-        $sevenzip a -tzip -x!system ../../eufix-force-fbe-oreo.zip . >/dev/null
-    fi
+#  no need for redmi note 7 pro
+#    if [ -z "$NO_EXTRA_FBE" ]; then
+#        cp "$tool_dir/update-binary-fbe" $ubin
+#        rm -f eufix-force-fbe-oreo.zip
+#        $sevenzip a -tzip -x!system ../../eufix-force-fbe-oreo.zip . >/dev/null
+#    fi
 
     trap - INT
     popd
